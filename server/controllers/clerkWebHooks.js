@@ -27,6 +27,7 @@ console.log("Webhook secret exists:", !!process.env.CLERK_WEBHOOK_SECRET);
 whook.verify(payload, headers);
 
 const evt = JSON.parse(payload);
+const { data, type } = evt;
 
 console.log("Event type:", evt.type);
     const userData = {
