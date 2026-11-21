@@ -21,9 +21,14 @@ Instance kya hota hai? */
     };
 
     const payload = req.body.toString();
-    const evt = whook.verify(payload, headers);
-    const { data, type } = evt;
+    console.log("Raw body received:", Buffer.isBuffer(req.body));
+console.log("Webhook secret exists:", !!process.env.CLERK_WEBHOOK_SECRET);
 
+whook.verify(payload, headers);
+
+const evt = JSON.parse(payload);
+
+console.log("Event type:", evt.type);
     const userData = {
       _id: data.id,
       email: data.email_addresses?.[0]?.email_address || "",
