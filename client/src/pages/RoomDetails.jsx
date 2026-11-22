@@ -2,13 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { facilityIcons, roomCommonData } from "../assets/assets";
 import StarRating from "../components/StarRating";
-import { assets } from "../assets/assets";
-import {roomsDummyData} from "../assets/assets";
+import { assets } from "../assets/assets"
+import { useAppContext } from "../context/AppContext";
+import toast from "react-hot-toast";
 
 
 
 const RoomDetails = () => {
   const { id } = useParams();
+  const { rooms, getToken, axios, navigate } = useAppContext();
   
   const [room, setRoom] = useState(null);
   const [mainImage, setMainImage] = useState(null);
@@ -75,7 +77,7 @@ const RoomDetails = () => {
   };
 
   useEffect(() => {
-    const room = roomsDummyData.find((r) => r._id === id);
+    const room = rooms.find((r) => r._id === id);
     if (room) {
       setRoom(room);
       setMainImage(room.images[0]);
@@ -165,8 +167,8 @@ const RoomDetails = () => {
               <label htmlFor="checkInDate" className="font-medium">
                 Check-In
               </label>
-              <input
-                onChange={(e) => {
+             <input
+               onChange={(e) => {
                   setCheckInDate(e.target.value);
                   setIsAvailable(false);
                 }}
@@ -205,7 +207,7 @@ const RoomDetails = () => {
                 Guests
               </label>
               <input
-                onChange={(e) => setGuests(e.target.value)}
+               onChange={(e) => setGuests(e.target.value)}
                 value={guests}
                 type="number"
                 id="guests"

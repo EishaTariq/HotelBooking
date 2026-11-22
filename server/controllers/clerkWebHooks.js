@@ -30,19 +30,26 @@ const evt = JSON.parse(payload);
 const { data, type } = evt;
 
 console.log("Event type:", evt.type);
-    const userData = {
+    
+
+    switch (type) {
+      case "user.created": {
+        const userData = {
       _id: data.id,
       email: data.email_addresses?.[0]?.email_address || "",
       username: `${data.first_name || ""} ${data.last_name || ""}`.trim() || "Guest",
       image: data.image_url,
     };
-
-    switch (type) {
-      case "user.created": {
         await User.create(userData);
         break;
       }
       case "user.updated": {
+        const userData = {
+      _id: data.id,
+      email: data.email_addresses?.[0]?.email_address || "",
+      username: `${data.first_name || ""} ${data.last_name || ""}`.trim() || "Guest",
+      image: data.image_url,
+    };
         await User.findByIdAndUpdate(data.id, userData);
         break;
       }
