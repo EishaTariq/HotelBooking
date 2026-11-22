@@ -1,6 +1,5 @@
 import React from "react";
-import {assets} from "../assets/assets";
-
+import { assets } from "../assets/assets";
 
 const StarRating = ({ rating = 4 }) => {
   return (
@@ -8,9 +7,10 @@ const StarRating = ({ rating = 4 }) => {
       {Array(5)
         .fill("")
         .map((_, index) => (
-          <img  src={index < rating ? assets.starIconFilled : assets.starIconEmpty}
-            alt={index < rating ? "Filled Star" : "Empty Star"}
-            
+          <img
+            key={index}
+            src={index < rating ? assets.starIconFilled : assets.starIconOutlined}
+            alt={index < rating ? "Filled Star" : "Outlined Star"}
             className="w-4 h-4"
           />
         ))}

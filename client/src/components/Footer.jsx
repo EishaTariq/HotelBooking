@@ -1,41 +1,37 @@
 import React from "react";
-import {assets} from "../assets/assets";
+import { assets } from "../assets/assets";
 
 const Footer = () => {
   return (
-    <div className="bg-[#F6F9FC] text-gray-500/80 pt-8 px-6 md:px-16 lg:px-24 xl:px-32">
+    <footer className="bg-[#F6F9FC] text-gray-500/80 pt-12 px-6 md:px-16 lg:px-24 xl:px-32">
       <div className="flex flex-wrap justify-between gap-12 md:gap-6">
         {/* Brand & Socials */}
         <div className="max-w-80">
-          
-            <img src={assets.logo} alt="QuickStay Logo" className="mb-4 h-8 md:h-10 text-primary invert opacity-80" />
-           
-          </div>
+          <img
+            src={assets.logo}
+            alt="QuickStay Logo"
+            className="mb-4 h-8 md:h-10 text-primary invert opacity-80"
+          />
           <p className="text-sm">
             Discover the world&apos;s most extraordinary places to stay, from
             boutique hotels to luxury villas and private islands.
           </p>
 
-          {/* Social Icons (Instagram, Facebook, Twitter, LinkedIn) */}
+          {/* Social Icons */}
           <div className="flex items-center gap-3 mt-4">
-            {/* Instagram */}
             <a href="#" aria-label="Instagram" className="hover:text-gray-800 transition-colors">
               <img src={assets.instagramIcon} alt="Instagram" className="w-6 h-6" />
             </a>
-            {/* Facebook */}
             <a href="#" aria-label="Facebook" className="hover:text-gray-800 transition-colors">
               <img src={assets.facebookIcon} alt="Facebook" className="w-6 h-6" />
-              
             </a>
-            {/* Twitter */}
             <a href="#" aria-label="Twitter" className="hover:text-gray-800 transition-colors">
               <img src={assets.twitterIcon} alt="Twitter" className="w-6 h-6" />
             </a>
-            {/* LinkedIn */}
             <a href="#" aria-label="LinkedIn" className="hover:text-gray-800 transition-colors">
-              <img src={assets.linkedInIcon} alt="LinkedIn" className="w-6 h-6" />
+              <img src={assets.linkendinIcon} alt="LinkedIn" className="w-6 h-6" />
             </a>
-          
+          </div>
         </div>
 
         {/* Company Links */}
@@ -81,9 +77,6 @@ const Footer = () => {
               className="flex items-center justify-center bg-black h-9 w-9 aspect-square rounded-r text-white cursor-pointer hover:bg-gray-800 transition-colors"
             >
               <img src={assets.arrowIcon} alt="arrow" className="w-4 h-4 invert" />
-               
-               
-            
             </button>
           </form>
         </div>
@@ -99,7 +92,7 @@ const Footer = () => {
           <li><a href="#" className="hover:text-gray-800">Sitemap</a></li>
         </ul>
       </div>
-    </div>
+    </footer>
   );
 };
 

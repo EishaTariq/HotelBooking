@@ -1,19 +1,21 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Title from "../../components/Title";
-//import { roomsDummyData,assets } from "../../assets/assets";
 import { useAppContext } from "../../context/AppContext";
+import toast from "react-hot-toast";
 
 const ListRoom = () => {
- const [rooms, setRooms] = useState([]);
-  const { axios, getToken, user, currency } = useAppContext();
-
-  //const currency = "$";
+  const [rooms, setRooms] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const { axios, getToken, user, currency, fetchRooms: refreshGlobalRooms } = useAppContext();
 
   const fetchRooms = async () => {
+    setLoading(true);
     try {
+      const token = await getToken();
+      if (!token) return;
+
       const { data } = await axios.get("/api/rooms/owner", {
-        headers: { Authorization: `Bearer ${await getToken()}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (data.success) {
         setRooms(data.rooms);
@@ -22,19 +24,23 @@ const ListRoom = () => {
       }
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const toggleAvailability = async (roomId) => {
     try {
+      const token = await getToken();
       const { data } = await axios.post(
         "/api/rooms/toggle-availability",
         { roomId },
-        { headers: { Authorization: `Bearer ${await getToken()}` } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       if (data.success) {
         toast.success(data.message);
         fetchRooms();
+        if (refreshGlobalRooms) refreshGlobalRooms();
       } else {
         toast.error(data.message);
       }
@@ -78,37 +84,50 @@ const ListRoom = () => {
           </thead>
 
           <tbody className="text-sm">
-            {rooms.map((item) => (
-              <tr key={item._id}>
-                <td className="py-3 px-4 text-gray-700 border-t border-gray-300">
-                  {item.roomType}
-                </td>
-
-                <td className="py-3 px-4 text-gray-700 border-t border-gray-300 max-sm:hidden">
-                  {item.amenities?.join(", ")}
-                </td>
-
-                <td className="py-3 px-4 text-gray-700 border-t border-gray-300">
-                  {currency} {item.pricePerNight}
-                </td>
-
-                <td className="py-3 px-4 border-t border-gray-300 text-sm text-center">
-                  <label className="relative inline-flex items-center cursor-pointer text-gray-900 gap-3">
-                    <input
-                      onChange={() => toggleAvailability(item._id)}
-                      type="checkbox"
-                      className="sr-only peer"
-                      checked={item.isAvailable}
-                    
-                    />
-
-                    <div className="w-12 h-7 bg-slate-300 rounded-full peer-checked:bg-blue-600 transition-colors duration-200"></div>
-
-                    <span className="dot absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-5"></span>
-                  </label>
+            {loading ? (
+              <tr>
+                <td colSpan={4} className="py-6 text-center text-gray-500">
+                  Loading rooms...
                 </td>
               </tr>
-            ))}
+            ) : rooms.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="py-6 text-center text-gray-500">
+                  No rooms listed yet. Click "Add Room" to create one.
+                </td>
+              </tr>
+            ) : (
+              rooms.map((item) => (
+                <tr key={item._id}>
+                  <td className="py-3 px-4 text-gray-700 border-t border-gray-300">
+                    {item.roomType}
+                  </td>
+
+                  <td className="py-3 px-4 text-gray-700 border-t border-gray-300 max-sm:hidden">
+                    {item.amenities?.join(", ")}
+                  </td>
+
+                  <td className="py-3 px-4 text-gray-700 border-t border-gray-300">
+                    {currency} {item.pricePerNight}
+                  </td>
+
+                  <td className="py-3 px-4 border-t border-gray-300 text-sm text-center">
+                    <label className="relative inline-flex items-center cursor-pointer text-gray-900 gap-3">
+                      <input
+                        onChange={() => toggleAvailability(item._id)}
+                        type="checkbox"
+                        className="sr-only peer"
+                        checked={item.isAvailable}
+                      />
+
+                      <div className="w-12 h-7 bg-slate-300 rounded-full peer-checked:bg-blue-600 transition-colors duration-200"></div>
+
+                      <span className="dot absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-5"></span>
+                    </label>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

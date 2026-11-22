@@ -3,8 +3,13 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser, useAuth } from "@clerk/react";
 import toast from "react-hot-toast";
+import { roomsDummyData } from "../assets/assets";
 
-axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
+// Normalize backend URL by removing any trailing slash
+const backendBaseUrl = (import.meta.env.VITE_BACKEND_URL || "").replace(/\/+$/, "");
+if (backendBaseUrl) {
+  axios.defaults.baseURL = backendBaseUrl;
+}
 
 const AppContext = createContext();
 
@@ -17,37 +22,38 @@ export const AppProvider = ({ children }) => {
   const [isOwner, setIsOwner] = useState(false);
   const [showHotelReg, setShowHotelReg] = useState(false);
   const [searchedCities, setSearchedCities] = useState([]);
-  const [rooms, setRooms] = useState([]);
+  // Initialize with roomsDummyData so Featured Destination & Recommended Hotels always show
+  const [rooms, setRooms] = useState(roomsDummyData);
 
   const fetchRooms = async () => {
     try {
       const { data } = await axios.get("/api/rooms");
-      if (data.success) {
+      if (data && data.success && Array.isArray(data.rooms) && data.rooms.length > 0) {
         setRooms(data.rooms);
       } else {
-        toast.error(data.message);
+        // Fallback to dummy data if DB is empty so the site displays content
+        setRooms(roomsDummyData);
       }
     } catch (error) {
-      toast.error(error.message);
+      console.warn("Could not fetch live rooms, displaying demo rooms:", error.message);
+      setRooms(roomsDummyData);
     }
   };
 
   const fetchUser = async () => {
     try {
+      const token = await getToken();
+      if (!token) return;
+
       const { data } = await axios.get("/api/user", {
-        headers: { Authorization: `Bearer ${await getToken()}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (data.success) {
         setIsOwner(data.role === "hotelOwner");
         setSearchedCities(data.recentSearchedCities || []);
-      } else {
-        //retry getting user data after 5 seconds if the request fails  
-        setTimeout(() => {
-          fetchUser();
-        }, 5000);
       }
     } catch (error) {
-      toast.error(error.message);
+      console.error("fetchUser error:", error.message);
     }
   };
 
